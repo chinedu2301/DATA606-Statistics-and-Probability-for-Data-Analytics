@@ -1,0 +1,308 @@
+---
+title: "CUNY SPS DATA606 HW3 Probability"
+author: "Chinedu Onyeka"
+date: "9/16/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+## Problem 1:
+
+**Dice rolls.** (3.6, p. 92) If you roll a pair of fair dice, what is the probability of
+
+(a) getting a sum of 1?
+(b) getting a sum of 5?
+(c) getting a sum of 12?
+
+### Solution 1:
+
+#### 1(a)
+
+P(Getting a sum of 1) = 0 ; The minimum sum you can get when a pair of fair dice is tossed is 2.
+
+#### 1(b)
+
+P(Getting a sum of 5) = 4/36 = 1/9
+
+#### 1(c)
+
+P(Getting a sum of 12) = 1/36
+
+
+--------------------------------------------------------------------------------
+
+
+## Problem 2
+
+**Poverty and language**. (3.8, p. 93) The American Community Survey is an ongoing survey that provides data every year to give communities the current information they need to plan investments and services. The 2010 American Community Survey estimates that 14.6% of Americans live below the poverty line, 20.7% speak a language other than English (foreign language) at home, and 4.2% fall into both categories.
+
+(a) Are living below the poverty line and speaking a foreign language at home disjoint?
+(b) Draw a Venn diagram summarizing the variables and their associated probabilities.
+(c) What percent of Americans live below the poverty line and only speak English at home?
+(d) What percent of Americans live below the poverty line or speak a foreign language at home?
+(e) What percent of Americans live above the poverty line and only speak English at home?
+(f) Is the event that someone lives below the poverty line independent of the event that the person speaks a foreign language at home?
+
+### Solution 2:
+
+#### 2(a)
+
+No. Living below poverty line and speaking a foreign language at home are not disjoint because both can occur at the same time. In this survey, they both occured at the same time in 4.2% of the cases.
+
+#### 2(b)
+
+Below poverty line = P(B) = 0.146
+Speak foreign language = P(F) = 0.207
+Below poverty line and speak foreign language = P(B n F) = 0.042
+
+Venn diagram
+```{r venn--library, message=FALSE}
+library(VennDiagram)
+```
+
+```{r}
+below_poverty_line <- 0.146
+foreign_language <- 0.207
+both <- 0.042
+grid.newpage()
+Venn <- draw.pairwise.venn(area1 = below_poverty_line, area2 = foreign_language, cross.area = both, category = c("Poverty", "Foreign"))
+```
+
+#### 2(c)
+
+Percent of Americans that live below poverty line and only speak English at home
+
+P(B) = Probability of living below poverty line = 0.146  
+P(F) = Probability of speaking a foreign language other than English = 0.207  
+P(F^c^) = Probability of speaking only English = 1 - P(F) = 1 - 0.207 = 0.793  
+P(Below poverty line and speak only English) = P(B and F^c^)  
+= P(B) x P(F^c^c) = 0.146 x 0.793 = 0.1158  
+This means that about 11.58% of Americans live below poverty and speak only English  
+
+#### 2(d)  
+
+Percent of Americans that live below poverty or speak a foreign language  
+P(B or F) = P(B) + P(F) - P(B n F) = 0.146 + 0.207 - 0.042 = 0.311
+
+#### 2(e)
+
+Percent of Americans that live above poverty or only speak English  
+P(B or F)^c^ = 1 - P(B or F) = 1 - 0.311 = 0.689  
+This means that about 68.9% Americans live above poverty or only speak English.
+
+
+#### 2(f)  
+
+
+Yes it is independent because living below the povert line provides no useful information about whether the person speaks a foreign language.
+
+--------------------------------------------------------------------------------
+
+
+## Problem 3
+
+**Assortative mating**. (3.18, p. 111) Assortative mating is a nonrandom mating pattern where individuals with similar genotypes and/or phenotypes mate with one another more frequently than what would be expected under a random mating pattern. Researchers studying this topic collected data on eye colors of 204 Scandinavian men and their female partners. The table below summarizes the results. For simplicity, we only include heterosexual relationships in this exercise.
+
+\begin{center}
+\begin{tabular}{ll  ccc c}
+                                        &           & \multicolumn{3}{c}{\textit{Partner (female)}} \\
+\cline{3-5}
+                                        &           & Blue  & Brown     & Green     & Total \\
+\cline{2-6}
+                                        & Blue      & 78    & 23        & 13        & 114 \\
+\multirow{2}{*}{\textit{Self (male)}}   & Brown     & 19    & 23        & 12        & 54 \\
+                                        & Green     & 11    & 9         & 16        & 36 \\
+\cline{2-6}
+                                        & Total     & 108   & 55        & 41        & 204
+\end{tabular}
+\end{center}
+
+
+(a) What is the probability that a randomly chosen male respondent or his partner has blue eyes?
+(b) What is the probability that a randomly chosen male respondent with blue eyes has a partner with blue eyes?
+(c) Whatistheprobabilitythatarandomlychosenmalerespondentwithbrowneyeshasapartner with blue eyes? What about the probability of a randomly chosen male respondent with green eyes having a partner with blue eyes?
+(d) Does it appear that the eye colors of male respondents and their partners are independent? Explain your reasoning.
+
+
+### Solution 3: 
+
+#### 3(a)
+
+P(Self=Blue or Partner=Blue) = P(Self=Blue) + P(Partner=Blue) - P(Self=Blue and Partner=Blue)  
+P(Self=Blue or Partner=Blue) = (114/204) + (108/204) - (78/204) = (144/204) = 0.7059
+
+#### 3(b)
+
+P(Self=Blue|Partner=Blue) = (78/114) = 0.6842
+
+#### 3(c)
+
+P(Self=Green|Partner=Blue) = (11/56) = 0.3056
+
+#### 3(d)
+
+The probability that a male respondent with blue eyes has a partner with blue eyes is much higher compared to when the male respondent has a Brown or Green eyes. Hence, it seems that the eye colors of male respondents and their partners are dependent.
+
+
+
+
+
+--------------------------------------------------------------------------------
+
+
+## Problem 4
+
+**Books on a bookshelf**. (3.26, p. 114) The table below shows the distribution of books on a bookcase
+based on whether they are nonfiction or fiction and hardcover or paperback.
+
+\begin{center}
+\begin{tabular}{ll  cc c}
+                                &           & \multicolumn{2}{c}{\textit{Format}} \\
+\cline{3-4}
+                                &           & Hardcover     & Paperback     & Total \\
+\cline{2-5}
+\multirow{2}{*}{\textit{Type}}  & Fiction   & 13            & 59            & 72 \\
+                                & Nonfiction& 15            & 8             & 23 \\
+\cline{2-5}
+                                & Total     & 28            & 67            & 95 \\
+\cline{2-5}
+\end{tabular}
+\end{center}
+
+(a) Find the probability of drawing a hardcover book first then a paperback fiction book second when drawing without replacement.
+(b) Determine the probability of drawing a fiction book first and then a hardcover book second, when drawing without replacement.
+(c) Calculate the probability of the scenario in part (b), except this time complete the calculations under the scenario where the first book is placed back on the bookcase before randomly drawing the second book.
+(d) The final answers to parts (b) and (c) are very similar. Explain why this is the case.
+
+### Solution 4
+
+#### 4(a)
+
+P(Hard cover book then paperback fiction without replacement) = (28/95) x (59/94) = 0.1850  
+
+#### 4(b)
+
+P(Fiction book then hard cover book without replacement) = (72/95) x (27/94) = 0.2117  
+
+#### 4(c)
+
+P(Fiction book then hard cover book with replacement) = (72/95) x (28/95) = 0.2234
+
+#### 4(d)
+
+They are similar because of the difference in number of cases affected is small relative to the total. In this case, it is (1/95) difference with or without replacement. Hence, this doesn't change the probability that much whether it is with replacement or without.
+
+
+--------------------------------------------------------------------------------
+
+
+
+## Problem 5
+
+**Baggage fees**. (3.34, p. 124) An airline charges the following baggage fees: $25 for the first bag and $35 for the second. Suppose 54% of passengers have no checked luggage, 34% have one piece of checked luggage and 12% have two pieces. We suppose a negligible portion of people check more than two bags.
+
+(a) Build a probability model, compute the average revenue per passenger, and compute the corresponding standard deviation.
+(b) About how much revenue should the airline expect for a flight of 120 passengers? With what standard deviation? Note any assumptions you make and if you think they are justified.
+
+### Solution 5
+
+#### 5(a)  
+
+Build a probability model  
+```{r}
+scenario <- c("No baggage", "One Piece", "Two pieces")
+values_x <- c(0, 25, 60)
+probability_P <- c(0.54, 0.34, 0.12)
+xP <- values_x * probability_P
+prob_model <- rbind(values_x, probability_P, xP)
+prob_model <- as.data.frame(prob_model)
+colnames(prob_model) <-scenario
+prob_model
+
+```
+
+Expected  Value = Sum(xP)  
+
+Standard deviation = sqrt(Var)
+```{r}
+E = sum(xP)
+paste0("The expected value is ", E)
+Var = sum(((values_x - E)^2 * probability_P))
+Sd = round(sqrt(Var), 2)
+paste0("The standard deviation is ", Sd)
+```
+
+#### 5(b)
+
+Expected revenue for 120 passengers:
+```{r}
+ER = E * 120
+paste0("The expected revenue for 120 passengers is about $", ER)
+```
+
+
+
+--------------------------------------------------------------------------------
+
+
+
+## Problem 6
+
+**Income and gender**. (3.38, p. 128) The relative frequency table below displays the distribution of annual total personal income (in 2009 inflation-adjusted dollars) for a representative sample of 96,420,486 Americans. These data come from the American Community Survey for 2005-2009. This sample is comprised of 59% males and 41% females.
+
+\begin{center}
+\begin{tabular}{lr}
+  \hline
+\textit{Income}         & \textit{Total} \\
+  \hline
+\$1 to \$9,999 or loss  & 2.2\% \\
+\$10,000 to \$14,999    & 4.7\% \\
+\$15,000 to \$24,999    & 15.8\% \\
+\$25,000 to \$34,999    & 18.3\% \\
+\$35,000 to \$49,999    & 21.2\% \\
+\$50,000 to \$64,999    & 13.9\% \\
+\$65,000 to \$74,999    & 5.8\% \\
+\$75,000 to \$99,999    & 8.4\% \\
+\$100,000 or more       & 9.7\% \\
+   \hline
+\end{tabular}
+\end{center}
+
+(a) Describe the distribution of total personal income.
+(b) What is the probability that a randomly chosen US
+resident makes less than $50,000 per year?
+(c) What is the probability that a randomly chosen US resident makes less than $50,000 per year and is female?
+Note any assumptions you make.
+(d) The same data source indicates that 71.8% of females
+make less than $50,000 per year. Use this value to determine whether or not the assumption you made in part (c) is valid.
+
+
+### Solution 6
+
+#### 6(a)
+
+The distribution is a continous distribution that appears almost symmetric.
+
+#### 6(b)
+
+P(US resident makes less than $50,000 per year)
+```{r}
+less_than_50 <- (2.2 + 4.7 + 15.8 + 18.3 + 21.2)/100
+paste0("The probability that a US resident makes less than $50,000 per year is ", less_than_50)
+```
+#### 6(c)
+
+P(US resident makes less than $50,000 per year and is female)
+```{r}
+less_than_50_and_female <- round(less_than_50 * 0.41, 4)
+paste0("The probability that a US resident makes less than $50,000 per year and is female is ", less_than_50_and_female)
+```
+#### 6(d)
+
+The same study indicates that 71.8% of females make less than $50,000.   
+The sample comprises 41% females. This invariably means that 71.8% of those 41% females (0.718 x 0.41 = 0.294) will make less than $50,000. This means that a randomly chosen female US resident will
+ earn less than $50,000 in 29.4% of the cases according to these numbers from the study. This means that my assumption of independence between the two is not valid and that being a female and earning less than 50,000 are indeed dependent.
+
+
