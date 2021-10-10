@@ -1,7 +1,7 @@
 ---
 title: "CUNY SPS DATA606 HW7 - Inference for Numerical Data"
 author: "Chinedu Onyeka"
-date: "October 17th, 2021"
+date: "October 9th, 2021"
 output:
   pdf_document:
     extra_dependencies:
@@ -332,6 +332,20 @@ $SST = SSG + SSE = 2006.16 + 267382 = 269388.16$
 $MSE = \frac{1}{df_{E}}*SSE = \frac{1}{1167}*267382 = 229.119$  
 **F-value**  
 $F_{value} = \frac{MSG}{MSE} = \frac{501.54}{229.119} = 2.18899$  
+
+Create a dataframe:
+```{r}
+headers <- c("Df", "Sum-Sq", "Mean-Sq", "F-value", "Pr(>F)")
+row_names <- c("degree", "Residuals", "Total")
+degree <- c(4, 2006.16, 501.54, 2.18899, 0.0682)
+Residuals <- c(1167, 267382, 229.119, NA, NA)
+Total <- c(1172, 269388.16, NA, NA, NA)
+table <- data.frame(degree, Residuals, Total)
+row.names(table) <- headers
+table <- t.data.frame(table)
+table
+```
+
 
 6d)  
 Conclusion: Since $p_{value} = 0.0682 > 0.05$, we do not reject the null hypothesis. Hence, there is no statistical evidence to support that there are differences across all groups.  
