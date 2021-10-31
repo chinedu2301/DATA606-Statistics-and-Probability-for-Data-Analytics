@@ -1,0 +1,145 @@
+---
+title: "CUNY SPS DATA 606 Data Project Proposal"
+author: "Chinedu Onyeka"
+date: "October 31st, 2021"
+output:
+  html_document:
+    df_print: paged
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+
+### <b>Data Preparation</b>
+
+<b>*Load required libraries:*</b>  
+```{r load-libraries, message=FALSE}
+library(tidyverse)
+```
+<b>*Load the data from github repo*</b>  
+```{r read-file, message=FALSE}
+url <- "https://raw.githubusercontent.com/chinedu2301/DATA606-Statistics-and-Probability-for-Data-Analytics/main/heart.csv"
+heart <- read_csv(url)
+```
+
+<b>*Look at the head of the data*</b>  
+```{r}
+head(heart, n = 10)
+```
+
+
+<b>*Get a glimpse of the variables in the datasets.*</b>  
+```{r}
+# get a glimpse of the variables
+glimpse(heart)
+```
+
+*There are 908 rows and 12 columns in this dataset.*
+
+
+### <b>Research question</b>  
+
+This project aims to: 
+<li> Determine if the mean Resting Blood Pressure (RestingBP) of individuals in the dataset who develop heart disease is significantly different from the mean Resting BloodPressure of individuals who do not develop heart disease. </li>
+<li> Determine if the mean Cholesterol level of individuals who develop heart disease is significantly different from the mean Cholesterol level of individuals who do not develop heart disease. </li>
+<li> Predict whether an individual will develop heart disease or not using Logistic Regression model in R.</li>
+
+
+### <b>Cases</b>  
+
+There are 12 variables and 918 observations in the dataset. Eleven(11) of the 12 variables in the dataset are potential predictors of the twelfth(12th) variable - HeartDisease.  
+Each observation represents the characteristics of an individual such as Age, Sex, RestingBP, Cholesterol level, etc. and whether that individual has a Heart Disease or not.
+
+
+
+### <b>Data collection</b>  
+
+This dataset was downloaded from Kaggle and then uploaded to my [github](https://github.com/chinedu2301/DATA606-Statistics-and-Probability-for-Data-Analytics/blob/main/heart.csv) repository.
+
+
+
+### <b>Type of study</b>   
+
+This is an observational study as there is no control group.
+
+
+
+### <b>Data Source</b>  
+
+This data was collected from kaggle and it's available [here](https://www.kaggle.com/fedesoriano/heart-failure-prediction)
+
+
+### <b>Response Variable (Dependent Variable)</b>  
+
+The dependent variable is "HeartDisease" which is coded as 1 if the individual has Heart Disease and as 0 if the individual does not have Heart Disease. The HeartDisease is a two level categorical variable.
+<li>HeartDisease: output class [1: heart disease, 0: Normal]</li>
+
+
+### <b>Independent Variable (Explanatory or predictor variables)</b>  
+
+There are eleven (11) explanatory variables most of which are numerical and some are categorical. The explanatory variables are:  
+
+<li>Age: age of the patient [years]</li>
+<li>Sex: sex of the patient [M: Male, F: Female]</li>
+<li>ChestPainType: chest pain type [TA: Typical Angina, ATA: Atypical Angina, NAP: Non-Anginal Pain, ASY: Asymptomatic]</li>
+<li>RestingBP: resting blood pressure [mm Hg]</li>
+<li>Cholesterol: serum cholesterol [mm/dl]</li>
+<li>FastingBS: fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]</li>
+<li>RestingECG: resting electrocardiogram results [Normal: Normal, ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]</li>
+<li>MaxHR: maximum heart rate achieved [Numeric value between 60 and 202]</li>
+<li>ExerciseAngina: exercise-induced angina [Y: Yes, N: No]</li>
+<li>Oldpeak: oldpeak = ST [Numeric value measured in depression]</li>
+<li>ST_Slope: the slope of the peak exercise ST segment [Up: upsloping, Flat: flat, Down: downsloping]</li>
+
+
+
+### <b>Relevant Summary statistics</b>  
+
+Relevant statistics are: 
+
+<b>*Summary statistics of all variables*</b>
+```{r}
+summary(heart)
+```
+
+*From the summary statistics, we can see that the average age of individuals in the dataset is 53 while the median age is 54. Also, the mean RestingBP is 132, the mean Cholesterol level is 198.8, and mean maxHR is 136.8*  
+
+<b>*Visualizations*</b>  
+
+```{r}
+# Bar chart by gender
+ggplot(heart, aes(x = Sex)) + geom_bar(fill = "brown") + theme_bw() + 
+  labs(title = "Bar Graph of total count by Gender") + ylab(NULL)
+```
+
+*The bar chart shows that there are way more Males in the dataset than Females.*
+
+
+```{r}
+# Barchart of individuals who have heart disease by gender
+heart %>% mutate(heart_prob = ifelse(HeartDisease == 1, "Yes", "No")) %>% 
+  ggplot(aes(x = heart_prob, fill = Sex)) + geom_bar() + theme_bw() + 
+  labs(title = "Bar Graph by Individuals who have HeartDisease") + xlab("HeartDisease") + ylab(NULL)
+```
+
+```{r}
+# Histogram of RestingBP
+ggplot(heart, aes(x = RestingBP)) + geom_histogram(binwidth = 15, fill = "brown") + 
+  labs(title = "Distribution of RestingBP") + ylab(NULL)
+```
+
+```{r}
+# Histogram of Age
+ggplot(heart, aes(x = Age)) + geom_histogram(binwidth = 2, fill = "brown") + 
+  labs(title = "Distribution of Age") + ylab(NULL)
+```
+
+```{r}
+# Histogram of Cholesterol level
+ggplot(heart, aes(x = Cholesterol)) + geom_histogram(binwidth = 12, fill = "brown") + 
+  labs(title = "Distribution of Cholesterol level") + ylab(NULL)
+```
+
+
+
