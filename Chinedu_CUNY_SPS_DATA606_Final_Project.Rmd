@@ -1,0 +1,386 @@
+---
+title: "CUNY SPS DATA606 Final Project"
+author: "Chinedu Onyeka"
+date: "November 12th, 2021"
+output:
+  html_document:
+    includes:
+      in_header: header.html
+    css: ./lab.css
+    highlight: pygments
+    theme: cerulean
+    toc: true
+    toc_float: true
+  pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<center> <h2> ABSTRACT </h2> </center> 
+In this project, the data from [kaggle](https://www.kaggle.com/fedesoriano/heart-failure-prediction) about individuals with heart disease was analyzed. From the analysis, there is sufficient statistical evidence that there is no difference in mean RestingBP of individuals with HeartDisease and those without HeartDisease. However, there is no sufficient statistical evidence that there is no difference in the Cholesterol level of individuals with HeartDisease and those without HeartDisease. i.e. There is a significant difference in the cholesterol level of individuals with HeartDisease and those without HeartDisease, whereas there is no significant difference in their Resting Blood Pressure. 
+Also, a logistic regression model to predict whether an individual will develop HeartDisease or not was developed in this project based on the features present in the data.  
+
+<center> <h2> INTRODUCTION </h2> </center> 
+
+This project aims to: 
+<li> Determine if the mean Resting Blood Pressure (RestingBP) of individuals in the dataset who develop heart disease is significantly different from the mean Resting BloodPressure of individuals who do not develop heart disease. </li>
+<li> Determine if the mean Cholesterol level of individuals who develop heart disease is significantly different from the mean Cholesterol level of individuals who do not develop heart disease. </li>
+<li> Predict whether an individual will develop heart disease or not using Logistic Regression model in R.</li>
+
+<center> <h2> DATA </h2> </center> 
+#### Data Source:  
+
+The data was gotten from [Kaggle](https://www.kaggle.com/fedesoriano/heart-failure-prediction)
+
+#### Data Collection: 
+
+According to the kaggle source, this dataset was created by combining different datasets already available independently but not combined before. In this dataset, 5 heart datasets are combined over 11 common features which makes it the largest heart disease dataset available so far for research purposes. The five datasets used for its curation are:  
+
+<li> Cleveland: 303 observations </li>
+<li> Hungarian: 294 observations </li>
+<li> Switzerland: 123 observations </li>
+<li> Long Beach VA: 200 observations </li>
+<li> Stalog (Heart) Data Set: 270 observations </li>  
+<br>
+
+Total: 1190 observations  
+Duplicated: 272 observations  
+<br>
+
+Final dataset: 918 observations  
+<br>
+
+Every dataset used can be found under the Index of heart disease datasets from UCI Machine Learning Repository on the following link: https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/
+
+#### Type of Study: 
+
+This is an observational study  
+
+#### Cases:  
+
+There are 12 variables and 918 observations. Eleven (11) of the 12 variables are explanatory variables  
+
+#### Response Variable (Dependent Variable) :  
+
+The dependent variable is "HeartDisease" which is coded as 1 if the individual has Heart Disease and as 0 if the individual does not have Heart Disease. The HeartDisease is a two level categorical variable.  
+<li>HeartDisease: output class [1: heart disease, 0: Normal]</li>
+
+#### Explanatory Variables (Independent Variable) :  
+
+There are eleven (11) explanatory variables most of which are numerical and some are categorical. The explanatory variables are:  
+
+<li>Age: age of the patient [years] - Numerical variable</li>
+<li>Sex: sex of the patient [M: Male, F: Female] - Two level categorical variable</li>
+<li>ChestPainType: chest pain type [TA: Typical Angina, ATA: Atypical Angina, NAP: Non-Anginal Pain, ASY: Asymptomatic] - Four level categorical variable</li>
+<li>RestingBP: resting blood pressure [mm Hg] - Numerical variable</li>
+<li>Cholesterol: serum cholesterol [mm/dl] - Numerical variable</li>
+<li>FastingBS: fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise] - Two level categorical variable</li>
+<li>RestingECG: resting electrocardiogram results [Normal: Normal, ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria] - Numerical variable</li>
+<li>MaxHR: maximum heart rate achieved [Numeric value between 60 and 202] - Numerical variable</li>
+<li>ExerciseAngina: exercise-induced angina [Y: Yes, N: No] - Two level categorical variable</li>
+<li>Oldpeak: oldpeak = ST [Numeric value measured in depression] - Numerical variable </li>
+<li>ST_Slope: the slope of the peak exercise ST segment [Up: upsloping, Flat: flat, Down: downsloping] - Three level categorical variable</li>
+
+<center> <h2> DATA ANALYSIS </h2> </center>
+**Required Libraries**
+```{r load-libraries, message=FALSE}
+library(tidyverse)
+library(caTools) # To split data into training and test data
+library(Amelia) # To visualize missing data
+library(cowplot) # To combine plots in a grid
+```
+
+**Load the data**
+```{r read-data, message=FALSE}
+url <- "https://raw.githubusercontent.com/chinedu2301/DATA606-Statistics-and-Probability-for-Data-Analytics/main/heart.csv"
+heart <- read_csv(url)
+```
+**Check the head of the data**
+```{r}
+# Check the head of the data
+head(heart)
+```
+**Get a glimpse of the data types and structure**
+```{r}
+glimpse(heart)
+```
+
+*There are 918 observations and 12 variables in the dataset*  
+
+**Get the summary**  
+```{r}
+summary(heart)
+```
+
+*From the summary statistics, we can see that the average age of individuals in the dataset is 53 while the median age is 54. Also, the mean RestingBP is 132, the mean Cholesterol level is 198.8, and maxHR is 136.8*
+
+
+
+
+**Compute the mean and standard deviations for the RestingBP and Cholesterol levels for both those with Heart Disease and those without Heart Disease.**
+
+```{r}
+# Get the mean and standard deviations of RestingBP and Cholesterol level for individuals with HeartDisease
+heart_1 <- heart %>% filter(HeartDisease == 1)
+meanBP_heart_1 <- mean(heart_1$RestingBP)
+stdBP_heart_1 <- sd(heart_1$RestingBP)
+meanCh_heart_1 <- mean(heart_1$Cholesterol)
+stdCh_heart_1 <- sd(heart_1$Cholesterol)
+n_heart_1 <- nrow(heart_1)
+
+# Get the mean and standard deviations of RestingBP and Cholesterol level for individuals without HeartDisease
+heart_0 <- heart %>% filter(HeartDisease == 0)
+meanBP_heart_0 <- mean(heart_0$RestingBP)
+stdBP_heart_0 <- sd(heart_0$RestingBP)
+meanCh_heart_0 <- mean(heart_0$Cholesterol)
+stdCh_heart_0 <- sd(heart_0$Cholesterol)
+n_heart_0 <- nrow(heart_0)
+
+# Arrange the values in a dataframe
+meanBP <- c(meanBP_heart_1, meanBP_heart_0)
+stdBP <- c(stdBP_heart_1, stdBP_heart_0)
+meanCho <- c(meanCh_heart_1, meanCh_heart_0)
+stdCho <- c(stdCh_heart_1, stdCh_heart_0)
+table <- data.frame(meanBP, stdBP, meanCho, stdCho)
+row.names(table) <- c("Heart Disease", "No Heart Disease")
+headers <- c("Mean RestingBP", "Std RestingBP", "Mean Cholesterol", "Std Cholesterol")
+colnames(table) <- headers
+table
+```
+
+### Hypothesis Testing for difference in mean RestingBP of individuals with Heart Disease and those without Heart Disease  
+
+*State the Null and Alternative Hypothesis*  
+Null Hypothesis, $H_{0}$ : There is no difference in the mean RestingBP of those with Heart Disease and those without Heart Disease. $\mu_{BPHeartDisease} - \mu_{BPNoHeartDisease} = 0$  
+Alternative Hypothesis, $H_{1}$ : There is some difference in the mean RestingBP of those with Heart Disease and those without Heart Disease. $\mu_{BPHeartDisease} - \mu_{BPNoHeartDisease} \neq 0$  
+
+*Check conditions:*  
+Independence: The sample come from difference random samples. Hence, the independence criteria is satisfied.  
+Normality: The sample size is large enough. Hence, we can assume a nearly normal distribution. 
+
+*Compute Test Statistics: *  
+$SE_{diff} = \sqrt{\frac{s^{2}}{n_{hd}} + \frac{s^{2}}{n_{nhd}}}$  
+$\bar{x}_{BpHD - BpNHD} = meanBPheart_1 - meanBPheart_0$  
+Test statistic $T = \frac{\bar{x}_{diff} - \mu_{diff}}{SE_{diff}}$  
+```{r}
+mu_diff <- 0
+xbar_diff <- meanBP_heart_1 - meanBP_heart_0
+SE_diff <- round((sqrt((stdBP_heart_1^2)/n_heart_1 + (stdBP_heart_0^2)/n_heart_0)),4)
+t <- round((xbar_diff - mu_diff)/SE_diff, 4)
+paste0("The test statistic, t is : ", t)
+```
+
+*Compute the p - value: *  
+```{r}
+alpha <- 0.05
+df <- n_heart_0 + n_heart_1 - 2
+p_value <- round(2*pt(t, df), 6)
+paste0("The p-value is ", p_value)
+```
+
+*Conclusion: *  
+Since the p-value is greater than 0.05, we do not reject the null hypothesis at $\alpha = 0.05$. Therefore, there is sufficient statistical evidence to support the null hypothesis that there is no difference in the mean RestingBP of those with Heart Disease and those without Heart Disease.  
+
+### Hypothesis Testing for difference in mean Cholesterol level of individuals with Heart Disease and those without Heart Disease  
+
+*State the Null and Alternative Hypothesis*  
+Null Hypothesis, $H_{0}$ : There is no difference in the mean Cholesterol level of those with Heart Disease and those without Heart Disease. $\mu_{CLHeartDisease} - \mu_{CLNoHeartDisease} = 0$  
+Alternative Hypothesis, $H_{1}$ : There is some difference in the mean Cholesterol level of those with Heart Disease and those without Heart Disease. $\mu_{CLHeartDisease} - \mu_{CLNoHeartDisease} \neq 0$  
+
+*Check conditions:*  
+Independence: The sample come from difference random samples. Hence, the independence criteria is satisfied.  
+Normality: The sample size is large enough. Hence, we can assume a nearly normal distribution. 
+
+*Compute Test Statistics: *  
+$SE_{diff} = \sqrt{\frac{s^{2}}{n_{hd}} + \frac{s^{2}}{n_{nhd}}}$  
+$\bar{x}_{Cl,HD - Cl,NHD} = meanCLheart_1 - meanCLheart_0$  
+Test statistic $T = \frac{\bar{x}_{diff} - \mu_{diff}}{SE_{diff}}$  
+```{r}
+mu_diff <- 0
+xbar_diff_cl <- meanCh_heart_1 - meanCh_heart_0
+SE_diff <- round((sqrt((stdCh_heart_1^2)/n_heart_1 + (stdCh_heart_0^2)/n_heart_0)),4)
+t2 <- round((xbar_diff_cl - mu_diff)/SE_diff, 4)
+paste0("The test statistic, t is : ", t2)
+```
+*Compute the p - value: *  
+```{r}
+alpha <- 0.05
+df <- n_heart_0 + n_heart_1 - 2
+p_value2 <- round(2*pt(t2, df), 6)
+paste0("The p-value is ", p_value2)
+```
+
+*Conclusion: *  
+Since the p-value is less than 0.05, we reject the null hypothesis at $\alpha = 0.05$. Therefore, there is no sufficient statistical evidence to support the null hypothesis that the mean Cholesterol level of those with Heart Disease is the same as those without Heart Disease.  
+
+### Logistic Regression Model to predict whether an Individual will have heart disease or not.  
+
+#### **Exploratory Data Analysis: **  
+
+
+**Check for Null values**
+```{r}
+# Check for NA values
+any(is.na(heart))
+```
+**Visualize the na values**
+```{r}
+# use missmap function from the Amelia package to check for NA values
+missmap(heart, main = "Heart Data - Missing Values", col = c("yellow", "black"), legend = FALSE)
+```
+
+*There are no NA values in the dataset*
+
+**Bar Graph by Gender**  
+```{r}
+# Bar Chart by Sex for the entire data set
+p1 <- ggplot(heart, aes(x =Sex)) + geom_bar(fill = "brown") + theme_bw() +
+  labs(title = "Bar Graph by Sex - All") + ylab(NULL)
+
+# Bar plot by Sex for only those with Heart Disease
+p2 <- ggplot(heart_1, aes(x =Sex)) + geom_bar(fill = "brown") + theme_bw() +
+  labs(title = "Bar Graph by Sex - Heart Disease") + ylab(NULL)
+
+# Bar plot by Sex for only those with no hear disease
+p3 <- ggplot(heart_0, aes(x =Sex)) + geom_bar(fill = "brown") + theme_bw() +
+  labs(title = "Bar Graph by Sex - No Heart Disease") + ylab(NULL)
+
+# Bar plot of individuals who have heart disease by Sex
+p4 <- heart %>% mutate(heart_prob = ifelse(HeartDisease == 1, "Yes", "No")) %>%
+  ggplot(aes(x = heart_prob, fill = Sex)) + geom_bar() + theme_bw() + ylab(NULL) +
+  labs(title = "HeartDisease vs No HeartDisease")
+
+# Plot all bar graphs in a grid
+plot_grid(p1, p2, p3, p4)
+```
+
+**Histogram to show distribution by age**
+```{r}
+# Histogram to show age distribution in the dataset
+p5 <- heart |> ggplot(aes(x = Age)) + geom_histogram(fill = "brown", binwidth = 2) + theme_bw() + 
+  labs(title = "Distribution by Age") + ylab(NULL)
+
+# Histogram of Cholesterol level
+p6 <- ggplot(heart, aes(x = Cholesterol)) + geom_histogram(binwidth = 12, fill = "brown") +
+  labs(title = "Distribution of Cholesterol level") + ylab(NULL) + theme_bw()
+
+# Histogram of RestingBP
+p7 <- heart %>% ggplot(aes(x = RestingBP)) + geom_histogram(binwidth = 15, fill = "brown") +
+  labs(title = "Distribution of RestingBP") + ylab(NULL) + theme_bw()
+
+# Plot all the histograms in a grid
+plot_grid(p5, p6, p7)
+```
+
+**Scatter plot of RestingBP vs Cholesterol **  
+```{r}
+# RestingBP vs Cholesterol
+heart |> ggplot(aes(x = Cholesterol, y = RestingBP, color = RestingECG)) + geom_point() +
+  labs(title = "RestingBP vs Cholesterol") + theme_bw()
+```
+
+**Box Plot of RestingBP for each ChestPainType**  
+```{r}
+# Boxplot by ChestPainType
+heart |> ggplot() + geom_boxplot(aes(x = ChestPainType, y = RestingBP)) + 
+  labs(title = "Box Plot of Resting BP vs ChestPainType") + theme_bw()
+```
+
+#### Train Test Split
+
+**Use the CaTools library to split the dataset into training and testing datasets**
+```{r}
+# Set a seed
+set.seed(101)
+
+#Split the sample
+sample <- sample.split(heart$HeartDisease, SplitRatio = 0.8) 
+
+# Training Data
+heart_train <- subset(heart, sample == TRUE)
+
+# Testing Data
+heart_test <- subset(heart, sample == FALSE)
+```
+
+#### Train the model
+
+**Train the model using a logistic model**  
+
+```{r}
+# Train the model
+heart_logistic_model <- glm(formula = HeartDisease ~ . , family = binomial(link = 'logit'), 
+                            data = heart_train)
+```
+
+**Get the summary of the model**  
+```{r}
+# Get the summary of the logistic model
+summary(heart_logistic_model)
+```
+
+#### Fit the model  
+
+**Predict values using the model**  
+```{r}
+fit_heart_probabilities <- predict(heart_logistic_model, newdata = heart_test, type = "response")
+```
+
+**Properly group the probabilities**
+```{r}
+# Make probabilities greater than 0.5 to be 1
+fit_heart_results <- ifelse(fit_heart_probabilities > 0.5, 1, 0)
+```
+
+#### Evaluate the model  
+
+**Accuracy**  
+```{r}
+# Misclassification Error
+misclassError <- mean(fit_heart_results != heart_test$HeartDisease)
+accuracy = round((1 - misclassError), 4) * 100
+paste0("The accuracy of the logistic regression model is ", accuracy, "%")
+```
+
+**Confusion Matrix**
+```{r}
+print("-CONFUSION MATRIX-")
+table(heart_test$HeartDisease, fit_heart_results > 0.5)
+```
+
+<center> <h2> CONCLUSION </h2> </center>
+From exploratory data analysis, we see that Males are more likely to have HeartDisease than females. Also, from the summary of the logistic model, "SexM - Male Gender" is a significant predictor of HeartDisease. Furthermore, from hypothesis testing of the difference in mean cholesterol level for those with and without heart disease, we see that there is a significant difference in their cholesterol level, but there is no significant difference in their RestingBP. Looking at the summary of the logistic model, we can easily see that Cholesterol level is also a significant predictor of HeartDisease, while RestingBP is not a significant predictor of HeartDisease. In addition, some other significant predictors of HeartDisease from the model summary are: ChestPainType, whether the individual ExerciseAngina, and Fasting Blood Sugar.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+`
+
+
